@@ -1,16 +1,26 @@
-import datetime
+from datetime import datetime
 
 from bs4 import BeautifulSoup
 import requests
 
+from news_app.dto.news import NewsItem
+
 
 class Spider:
 
-    def crowl(self, date: datetime = None):
+    def crowl_todays(self) -> list[NewsItem]:
         news_link_list = self.__load_todays_news_list()
+
+        news_list: list[NewsItem] = []
+
         for news_link in news_link_list:
             page_html_response = self.__load_page(news_link)
-            heading, content, timestamp = self.__parse_news_page(page_html_response)
+            page_details = self.__parse_news_page(page_html_response)
+            page_details.link_to_source = news_link
+            page_details.news_id = f'ader_{news_link.split('/')[-1]}'
+            news_list.append(page_details)
+        
+        return news_list
 
     def __load_todays_news_list(self):
         url = f"https://sinhala.adaderana.lk/sinhala-hot-news.php?pageno={1}"
@@ -55,15 +65,20 @@ class Spider:
 
         return response
 
-    def __parse_news_page(self, response) -> tuple:
+    def __parse_news_page(self, response) -> NewsItem:
         soup = BeautifulSoup(response.content, 'html.parser')
 
         heading_element = soup.select_one('h1.news-heading')
         content_element = soup.select_one('div.news-content')
-        content_timestamp = soup.select_one('p.news-timestamp')
+        content_timestamp = soup.select_one('p.news-datestamp')
 
         lines = content_element.text.strip().split('\r\n')
         stripped_content = ' '.join([line for line in lines if line])
 
-        return heading_element.text, stripped_content, content_timestamp
+        news_item = NewsItem()
+        news_item.heading = heading_element.text
+        news_item.content = stripped_content
+        news_item.timestamp = datetime.strptime(content_timestamp.text.strip(), "%B %d, %Y  		%I:%M %p")
+
+        return news_item
     

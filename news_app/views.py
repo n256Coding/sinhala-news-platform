@@ -3,6 +3,7 @@ import pickle
 from django.shortcuts import render, HttpResponse
 import logging
 
+from news_app.services.classifier import Classifier
 from news_app.services.spider import Spider
 
 logger = logging.getLogger(__name__)
@@ -10,6 +11,7 @@ logger = logging.getLogger(__name__)
 
 def home(request):
     spider = Spider()
+    classifier = Classifier()
     
     cache_file_path_str = 'temp/news_cache.pkl'
     cache_file = Path(cache_file_path_str)
@@ -23,4 +25,6 @@ def home(request):
         pickle.dump(news_list, open(cache_file_path_str, 'wb+'))
         logger.info('Caching the news data')
 
-    return render(request, 'home.html', {"news_item_list": news_list})
+    classified_news_list = classifier.classify(news_list)
+
+    return render(request, 'home.html', {"news_item_list": classified_news_list})

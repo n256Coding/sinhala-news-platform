@@ -8,3 +8,4 @@ class NewsItem:
         self.content: str
         self.timestamp: datetime
         self.link_to_source: str
+        self.category: str

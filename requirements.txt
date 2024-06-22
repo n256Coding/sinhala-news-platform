@@ -2,3 +2,6 @@ Django==5.0.6
 beautifulsoup4==4.12.3
 requests==2.32.3
 pandas==2.2.2
+numpy==1.26.4
+transformers[torch]==4.41.2
+sinling==0.3.6

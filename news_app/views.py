@@ -27,4 +27,4 @@ def home(request):
 
     classified_news_list = classifier.classify(news_list)
 
-    return render(request, 'home.html', {"news_item_list": classified_news_list})
+    return render(request, 'news_app/home.html', {"news_item_list": classified_news_list})

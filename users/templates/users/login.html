@@ -1,0 +1,26 @@
+{% extends 'news_app/base.html' %}
+{% block title %} Login {% endblock %}
+
+{% block content %}
+
+<h1>Login</h1>
+<br/><br/>
+
+<form action="" method=POST>
+    {% csrf_token %}
+
+    <div class="mb-3">
+        <label for="exampleInputUsername1" class="form-label">User Name</label>
+        <input type="text" class="form-control" name="username" aria-describedby="usernameHelp">
+        <div id="usernameHelp" class="form-text">We'll never share your email with anyone else.</div>
+    </div>
+    <div class="mb-3">
+        <label for="exampleInputPassword1" class="form-label">Password</label>
+        <input type="password" class="form-control" name="password">
+    </div>
+    
+
+    <input type="submit" value="Submit" class="btn btn-secondary" />
+</form>
+
+{% endblock content %}

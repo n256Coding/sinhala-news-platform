@@ -1,0 +1,13 @@
+.news-card-footer-container {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+}
+
+.fill-remain {
+    flex-grow: 1;
+}
+
+.card {
+    margin-top: 10px;
+}

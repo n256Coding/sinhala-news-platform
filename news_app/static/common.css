@@ -1,7 +1,66 @@
+/* Import google fonts */
+@import url('https://fonts.googleapis.com/css2?family=Gemunu+Libre:wght@200..800&family=Noto+Sans+Sinhala:wght@100..900&family=Noto+Serif+Sinhala:wght@100..900&display=swap');
+
+.page-header {
+    background-color: beige;
+    text-align: right;
+    padding-right: 20px;
+    font-family: "Gemunu Libre", sans-serif;
+    font-size: 30px;
+    position: sticky;
+    z-index: 999;
+}
+
+.page-title {
+    background-color: rgba(100, 148, 237, 0.594);
+    height: 6rem;
+    display: flex;
+    align-items: center;
+    padding-left: 20px;
+    backdrop-filter: blur(6px);
+    position: sticky;
+    top: 0;
+    z-index: 999;
+}
+
+.page-title > h1 {
+    font-family: "Noto Sans Sinhala", sans-serif;
+}
+
 .news-card-footer-container {
     display: flex;
     flex-direction: row;
     align-items: flex-end;
+}
+
+.news-category {
+    display: flex;
+    text-align: center;
+    background-color: rgb(45, 77, 255);
+    color: white;
+    font-weight: 600;
+    height: fit-content;
+    border-radius: 0 0 5px 5px;
+}
+
+.news-user-feedback > a {
+    text-decoration: none;
+    transition: 0.5s ease-in-out;
+    padding: 5px 20px 5px 20px;
+    border-radius: 5px;
+}
+
+.feedback-positive:hover {
+    border-style: solid;
+    border-width: 1px;
+    border-color: rgb(255, 157, 157);
+}
+
+.feedback-negative:hover {
+    border-style: solid;
+    border-width: 1px;
+    border-color: rgb(118, 188, 108);
+    transform: rotate(45deg);
 }
 
 .fill-remain {
@@ -12,16 +71,8 @@
     margin-top: 10px;
 }
 
-.page-title {
-    background-color: cornflowerblue;
-    height: 6rem;
-    display: flex;
-    align-items: center;
-    padding-left: 20px;
+.card-title {
+    font-family: "Noto Serif Sinhala", serif;
 }
 
-.page-header {
-    background-color: beige;
-    text-align: right;
-    padding-right: 20px;
-}
+

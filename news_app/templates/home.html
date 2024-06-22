@@ -7,12 +7,19 @@
     <div class="col">
         <div class="card">
             <div class="card-body">
-                <h4 class="card-title">{{ news_item.heading }}</h4>
+                <h5 class="card-title">{{ news_item.heading }}</h5>
                 <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
                 <div class="news-card-footer-container">
                     <a class="fill-remain" href="{{ news_item.link_to_source }}" target="_blank">Read more</a>
-                    <span class="badge text-bg-primary">{{ news_item.category }}</span>
+                    {% comment %} <span class="badge text-bg-primary">{{ news_item.category }}</span> {% endcomment %}
+                    <div class="news-user-feedback">
+                        <a class="feedback-positive" href="#">👍</a>
+                        <a class="feedback-negative" href="#">👎</a>
+                    </div>
                 </div>
+            </div>
+            <div class="news-category">
+                <span class="fill-remain">{{ news_item.category }}</span>
             </div>
         </div>
     </div>

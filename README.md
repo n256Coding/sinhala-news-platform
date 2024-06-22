@@ -1,10 +1,9 @@
-How to start the server
+### Start the server
 ```bash
 python manage.py runserver
 ```
 
-
-How to migrate database changes
+### Migrate database changes
 
 `python manage.py makemigrations`
 
@@ -21,3 +20,7 @@ Admin portal url: `http://localhost:8000/admin`
 Default credentials
 * Username: admin
 * Password: 123
+
+
+### Create a new app
+`python manage.py startapp <appname>`

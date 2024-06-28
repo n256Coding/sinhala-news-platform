@@ -94,13 +94,6 @@ def home(request):
 
     categorywise_similarty_data['liked_count_ratio'] = (categorywise_similarty_data['liked_count'] / len(categorywise_similarty_data.index)) * len(classified_news_list)
 
-    print(categorywise_similarty_data)
-    # categorywise_similarty_data.sort_values(by='liked_count', ascending=False)
-
-    # recommended_news_items = recommendation_result.sort_values(by='similarity_score', ascending=False).head(10)['news_item'].values
-    # for recommended_news_item in recommended_news_items:
-    #     print(recommended_news_item.heading)
-
     recommended_news_items = []
     for index, similarity_data_row in categorywise_similarty_data.sort_values(by='liked_count_ratio', ascending=False).iterrows():
         category = similarity_data_row['category']

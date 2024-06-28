@@ -1,29 +1,63 @@
 {% extends "news_app/base.html" %}
 {% block title %} Home Page {% endblock %}
-{% block content %}
 
-<div class="row row-cols-3">
-    {% for news_item in news_item_list %}
-    <div class="col">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">{{ news_item.heading }}</h5>
-                <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                <div class="news-card-footer-container">
-                    <a class="fill-remain" href="{{ news_item.link_to_source }}" target="_blank">Read more</a>
-                    <div class="news-user-feedback">
-                        <a class="feedback-positive" href="#">👍</a>
-                        <a class="feedback-negative" href="#">👎</a>
+{% block content %}
+<div class="row">
+
+    {% comment %} Recommended news section {% endcomment %}
+    <div class="col-9">
+        <h3>Picked for You</h3>
+        <div class="row row-cols-3">
+            {% for news_item in news_item_list %}
+            <div class="col">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ news_item.heading }}</h5>
+                        <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                        <div class="news-card-footer-container">
+                            <a class="fill-remain" href="{{ news_item.link_to_source }}" target="_blank">Read more</a>
+                            <div class="news-user-feedback">
+                                <a class="feedback-positive" href="#">👍</a>
+                                <a class="feedback-negative" href="#">👎</a>
+                            </div>
+                        </div>
+                        <input type="hidden" class="hdn-news-id" value="{{ news_item.news_id }}">
+                    </div>
+                    <div class="news-category">
+                        <span class="fill-remain">{{ news_item.category }}</span>
                     </div>
                 </div>
-                <input type="hidden" class="hdn-news-id" value="{{ news_item.news_id }}">
             </div>
-            <div class="news-category">
-                <span class="fill-remain">{{ news_item.category }}</span>
-            </div>
+            {% endfor %}
         </div>
     </div>
-    {% endfor %}
-</div>
 
+    {% comment %} Latest news section {% endcomment %}
+    <div class="col-3">
+        <h3>All News</h3>
+        <div class="row row-cols-1">
+            {% for extra_news_item in extra_news_list %}
+            <div class="col">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ extra_news_item.heading }}</h5>
+                        <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                        <div class="news-card-footer-container">
+                            <a class="fill-remain" href="{{ extra_news_item.link_to_source }}" target="_blank">Read more</a>
+                            <div class="news-user-feedback">
+                                <a class="feedback-positive" href="#">👍</a>
+                                <a class="feedback-negative" href="#">👎</a>
+                            </div>
+                        </div>
+                        <input type="hidden" class="hdn-news-id" value="{{ extra_news_item.news_id }}">
+                    </div>
+                    <div class="news-category">
+                        <span class="fill-remain">{{ extra_news_item.category }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
 {% endblock content %}

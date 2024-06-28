@@ -92,7 +92,7 @@ def home(request):
         'similarity_data': df_field_similarity_data
     })
 
-    categorywise_similarty_data['liked_count_ratio'] = int((categorywise_similarty_data['liked_count'] / len(categorywise_similarty_data.index)) * len(classified_news_list))
+    categorywise_similarty_data['liked_count_ratio'] = (categorywise_similarty_data['liked_count'] / len(categorywise_similarty_data.index)) * len(classified_news_list)
 
     print(categorywise_similarty_data)
     # categorywise_similarty_data.sort_values(by='liked_count', ascending=False)
@@ -102,14 +102,17 @@ def home(request):
     #     print(recommended_news_item.heading)
 
     recommended_news_items = []
-    for index, similarity_data_row in categorywise_similarty_data.iterrows():
+    for index, similarity_data_row in categorywise_similarty_data.sort_values(by='liked_count_ratio', ascending=False).iterrows():
         category = similarity_data_row['category']
         similarity_data: pd.DataFrame = similarity_data_row['similarity_data']
         liked_count_ratio = similarity_data_row['liked_count_ratio']
 
-        news_items = similarity_data.sort_values(by='similarity_score', ascending=False).iloc[:liked_count_ratio]['news_item'].tolist()
+        news_items = similarity_data.sort_values(by='similarity_score', ascending=False).iloc[:int(liked_count_ratio)]['news_item'].tolist()
         recommended_news_items += news_items
     
-    
+    render_context = {
+        "news_item_list": recommended_news_items,
+        "extra_news_list": classified_news_list
+    }
 
-    return render(request, 'news_app/home.html', {"news_item_list": recommended_news_items})
+    return render(request, 'news_app/home.html', render_context)

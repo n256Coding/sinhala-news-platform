@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.decorators import api_view
 
+from news_app.models import News
 from recommendation.models import UserFeedback
 
 @api_view(['POST'])
@@ -14,22 +15,16 @@ def get_user_feedback(request: Request):
     print(request.data)
     category = request.data.get('category')
     feedback_type = request.data.get('feedback_type')
+    news_id = request.data.get('news_id')
 
-    feedback_record = UserFeedback.objects.filter(user=user).first()
+    news_record = News.objects.filter(news_id = news_id).first()
+    feedback_record = UserFeedback.objects.filter(user=user, news_item=news_record).first()
     if not feedback_record:
         feedback_record = UserFeedback()
         feedback_record.user = user
-        feedback_record.feedback = {category: 1 if feedback_type == 'positive' else -1}
+        feedback_record.news_item = news_record
+        feedback_record.feedback_type = feedback_type
     
-    else:
-        feedback_json = feedback_record.feedback
-        if feedback_json.get(category):
-            feedback_json[category] = feedback_json[category] + (1 if feedback_type == 'positive' else -1)
-        else:
-            feedback_json[category] = (1 if feedback_type == 'positive' else -1)
-
-        feedback_record.feedback = feedback_json
-    
-    feedback_record.save()
+        feedback_record.save()
 
     return Response()

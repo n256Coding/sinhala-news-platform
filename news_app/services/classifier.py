@@ -11,7 +11,7 @@ class Classifier:
         self.classifier_local_location = 'temp/models/sinbert-500'
         self.classifier_pipe = pipeline("text-classification", self.classifier_local_location)
 
-    def classify(self, news_list: list[NewsItem]):
+    def classify(self, news_list: list[NewsItem]) -> list[NewsItem]:
         for news in news_list:
             
             saved_object = News.objects.filter(news_id=news.news_id).first()

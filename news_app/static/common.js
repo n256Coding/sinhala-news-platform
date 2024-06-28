@@ -1,6 +1,7 @@
 $(".feedback-positive").click(function(){
     
     news_category = $(this).parent().parent().parent().siblings(':last').children(':first').text()
+    news_id = $(this).parent().parent().siblings(':last').val()
 
     var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
 
@@ -10,13 +11,16 @@ $(".feedback-positive").click(function(){
         beforeSend: function (xhr){
             xhr.setRequestHeader('X-CSRFToken', csrftoken);
         },
-        data: {
+        contentType: "application/json; charset=utf-8",
+        dataType: 'json',
+        data: JSON.stringify({
             category: news_category,
             feedback_type: "positive",
+            news_id: news_id,
             csrfmiddlewaretoken: window.CSRF_TOKEN
-        },
+        }),
         success: function(data){
-            alert("Data: " + data);
+            console.log("Data: " + data);
         }
     });
 });
@@ -24,6 +28,7 @@ $(".feedback-positive").click(function(){
 $(".feedback-negative").click(function(){
     
     news_category = $(this).parent().parent().parent().siblings(':last').children(':first').text()
+    news_id = $(this).parent().parent().siblings(':last').val()
 
     var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
 
@@ -38,6 +43,7 @@ $(".feedback-negative").click(function(){
         data: JSON.stringify({
             category: news_category,
             feedback_type: "negative",
+            news_id: news_id,
             csrfmiddlewaretoken: window.CSRF_TOKEN
         }),
         success: function(data){

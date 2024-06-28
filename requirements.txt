@@ -6,3 +6,4 @@ numpy==1.26.4
 transformers[torch]==4.41.2
 sinling==0.3.6
 django_rest_framework
+gensim

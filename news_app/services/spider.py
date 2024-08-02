@@ -8,7 +8,7 @@ from news_app.dto.news import NewsItem
 
 class Spider:
 
-    def crowl_todays(self) -> list[NewsItem]:
+    def crawl_todays(self) -> list[NewsItem]:
         news_link_list = self.__load_todays_news_list()
 
         news_list: list[NewsItem] = []

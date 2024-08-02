@@ -26,7 +26,7 @@ def home(request):
         logger.info('News data loaded from cache.')
 
     else:
-        news_list = spider.crowl_todays()
+        news_list = spider.crawl_todays()
         pickle.dump(news_list, open(cache_file_path_str, 'wb+'))
         logger.info('Caching the news data')
 

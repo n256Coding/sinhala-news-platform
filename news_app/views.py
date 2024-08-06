@@ -1,3 +1,5 @@
+# from datetime import datetime
+import datetime
 from pathlib import Path
 import pickle
 from django.shortcuts import render, HttpResponse
@@ -6,8 +8,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 import pandas as pd
 
-from news_app.services.classifier import Classifier
-from news_app.services.spider import Spider
+from news_app.models import News
 from recommendation.models import UserFeedback
 from recommendation.services.recommendation import to_sentence_embedding
 
@@ -15,22 +16,30 @@ logger = logging.getLogger(__name__)
 
 
 def home(request):
-    spider = Spider()
-    classifier = Classifier()
     
-    cache_file_path_str = 'temp/news_cache.pkl'
-    cache_file = Path(cache_file_path_str)
-    if cache_file.is_file():
-        # file exists, load the data from cache
-        news_list = pickle.load(open(cache_file_path_str, 'rb'))
-        logger.info('News data loaded from cache.')
+    # today = datetime.today().date()
 
-    else:
-        news_list = spider.crawl_todays()
-        pickle.dump(news_list, open(cache_file_path_str, 'wb+'))
-        logger.info('Caching the news data')
+    # classified_news_list = News.objects.filter(date__date=today).values()
+    classified_news_list = News.objects.filter(date__date=datetime.date(2024, 8, 2)).all()
+    # classified_news_list = News.objects.filter(category__contains='sport').all()
+    # todays_news_list = [News.objects.first()]
+    
+    # cache_file_path_str = 'temp/news_cache.pkl'
+    # cache_file = Path(cache_file_path_str)
+    # if cache_file.is_file():
+    #     # file exists, load the data from cache
+    #     news_list = pickle.load(open(cache_file_path_str, 'rb'))
+    #     logger.info('News data loaded from cache.')
 
-    classified_news_list = classifier.classify(news_list)
+    # else:
+    #     # news_list = spider.crawl_todays()
+    #     # pickle.dump(news_list, open(cache_file_path_str, 'wb+'))
+    #     logger.info('Caching the news data')
+
+    # classified_news_list = todays_news_list
+
+    # print(todays_news_list)
+    # print(classified_news_list)
 
     current_user = request.user
 

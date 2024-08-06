@@ -1,15 +1,19 @@
-from datetime import datetime
+import datetime
+import time
+from django.utils.timezone import make_aware
 
 from bs4 import BeautifulSoup
+import pytz
 import requests
 
 from news_app.dto.news import NewsItem
+from news_app.models import News
 
 
 class Spider:
 
     def crawl_todays(self) -> list[NewsItem]:
-        news_link_list = self.__load_todays_news_list()
+        news_link_list = self.__load_news_list_of_page()
 
         news_list: list[NewsItem] = []
 
@@ -22,8 +26,8 @@ class Spider:
         
         return news_list
 
-    def __load_todays_news_list(self):
-        url = f"https://sinhala.adaderana.lk/sinhala-hot-news.php?pageno={1}"
+    def __load_news_list_of_page(self, page_no):
+        url = f"https://sinhala.adaderana.lk/sinhala-hot-news.php?pageno={page_no}"
         response = requests.get(url, headers={
             'User-Agent': 'PostmanRuntime/7.39.0',
             'Accept': '*/*',
@@ -35,11 +39,13 @@ class Spider:
         # div.news-story:nth-child(26) > div:nth-child(1) > h2:nth-child(1) > a:nth-child(1)
         soup = BeautifulSoup(response.content, 'html.parser')
         story_texts = soup.select('div.news-story > div.story-text')
-        links = []
+        links: list[tuple] = []
 
         for story in story_texts:
             anchor = story.select('h2 > a')
-            links.append(f'https://sinhala.adaderana.lk/{anchor[0]["href"]}')
+            date_string = story.select('div.comments > span')[0].text[2:]
+            date_obj = datetime.datetime.strptime(date_string, '%B %d, %Y %I:%M %p').astimezone()
+            links.append((f'https://sinhala.adaderana.lk/{anchor[0]["href"]}', date_obj))
         
         return links
 
@@ -65,7 +71,7 @@ class Spider:
 
         return response
 
-    def __parse_news_page(self, response) -> NewsItem:
+    def __parse_news_page(self, response: requests.models.Response) -> NewsItem:
         soup = BeautifulSoup(response.content, 'html.parser')
 
         heading_element = soup.select_one('h1.news-heading')
@@ -78,7 +84,43 @@ class Spider:
         news_item = NewsItem()
         news_item.heading = heading_element.text
         news_item.content = stripped_content
-        news_item.timestamp = datetime.strptime(content_timestamp.text.strip(), "%B %d, %Y  		%I:%M %p")
+        news_item.timestamp = datetime.datetime.strptime(content_timestamp.text.strip(), "%B %d, %Y  		%I:%M %p")
+        news_item.news_id = response.url.split('/')[-1]
+        news_item.link_to_source = response.url
 
         return news_item
     
+    def load_latest_news_items(self) -> list[NewsItem]:
+        try:
+            last_news = News.objects.latest('date')
+            last_news_datetime_in_db = last_news.date
+
+        except News.DoesNotExist as ex:
+            last_news_datetime_in_db = datetime.datetime(1990, 1, 1, 1, 1, 1, 1)
+            last_news_datetime_in_db = make_aware(last_news_datetime_in_db, timezone=pytz.timezone('UTC'))
+
+        loaded_news_items: list[NewsItem] = []
+
+        for page_no in range(1, 10):
+            print(f"Reading the page: {page_no}")
+
+            internal_loop_breaked = False
+
+            news_list = self.__load_news_list_of_page(page_no)
+
+            for news_link, current_news_datetime in news_list:
+                if current_news_datetime > last_news_datetime_in_db:
+                    html_content = self.__load_page(news_link)
+                    parsed_content = self.__parse_news_page(html_content)
+                    time.sleep(1)
+
+                    loaded_news_items.append(parsed_content)
+        
+                else:
+                    internal_loop_breaked = True
+                    break
+
+            if internal_loop_breaked:
+                break
+        
+        return loaded_news_items

@@ -1,8 +1,8 @@
 # from datetime import datetime
 import datetime
-from pathlib import Path
-import pickle
-from django.shortcuts import render, HttpResponse
+import random
+import chromadb
+from django.shortcuts import render
 import logging
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
@@ -11,110 +11,78 @@ import pandas as pd
 from news_app.models import News
 from recommendation.models import UserFeedback
 from recommendation.services.recommendation import to_sentence_embedding
+from recommendation.services.vector_db_provider import get_chroma_db_collection
+from sinhala_news_platform_backend.settings import MAXIMUM_NO_OF_RANDOM_SUGGESTED_ARTICLES
 
 logger = logging.getLogger(__name__)
 
 
 def home(request):
     
-    # today = datetime.today().date()
-
-    # classified_news_list = News.objects.filter(date__date=today).values()
-    classified_news_list = News.objects.filter(date__date=datetime.date(2024, 8, 2)).all()
-    # classified_news_list = News.objects.filter(category__contains='sport').all()
-    # todays_news_list = [News.objects.first()]
-    
-    # cache_file_path_str = 'temp/news_cache.pkl'
-    # cache_file = Path(cache_file_path_str)
-    # if cache_file.is_file():
-    #     # file exists, load the data from cache
-    #     news_list = pickle.load(open(cache_file_path_str, 'rb'))
-    #     logger.info('News data loaded from cache.')
-
-    # else:
-    #     # news_list = spider.crawl_todays()
-    #     # pickle.dump(news_list, open(cache_file_path_str, 'wb+'))
-    #     logger.info('Caching the news data')
-
-    # classified_news_list = todays_news_list
-
-    # print(todays_news_list)
-    # print(classified_news_list)
+    # Todays news articles
+    todays_news_items: list[News] = News.objects.filter(date__date=datetime.date.today()).all()
+    chroma_collection = get_chroma_db_collection()
 
     current_user = request.user
 
     # Load previously liked news (from News)
     user_feedbacks = UserFeedback.objects.filter(user=current_user).all()
-    user_feedbacks_df = UserFeedback.to_pandas(user_feedbacks)
 
-    categorywise_user_feedbacks_df = user_feedbacks_df.groupby(by='category')[['user']].count()
-    print(categorywise_user_feedbacks_df)
+    # News articles that the user has liked before
+    liked_news_items: list[News] = [user_feedback.news_item for user_feedback in user_feedbacks]
 
-    df_field_categories = []
-    df_field_liked_counts = []
-    df_field_similarity_data = []
-    for category, row in categorywise_user_feedbacks_df.iterrows():
-        liked_count = row['user']
-        # news_item = user_feedbacks_df[user_feedbacks_df['category'] == category]['news_item'].tolist()
+    if liked_news_items:
+
+        # There are some pre liked items available, proceed with them
+        print('Like history found. Recommendation processing...')
+
+        liked_articles_details: chromadb.GetResult = chroma_collection.get(
+            ids=[liked_new_item.news_id for liked_new_item in liked_news_items],
+            include=['embeddings']
+        )
         
-        # Get sentence embeddings of previously liked news
-        liked_sentence_embeddings = []
-        for user_feedback in [item for item in user_feedbacks if item.news_item.category == category]:
-            news_item = user_feedback.news_item
-            heading = news_item.heading
+        liked_embddings: list = liked_articles_details.get('embeddings')
 
-            heading_embedding = to_sentence_embedding(heading)
-            liked_sentence_embeddings.append(heading_embedding)
+        resulted_article_details: chromadb.QueryResult = chroma_collection.query(
+            query_embeddings=liked_embddings,
+            n_results=5,
+            where={'timestamp': {'$gte': datetime.datetime.combine(datetime.datetime.today(), datetime.time.min).timestamp()}},
+            include=[]
+        )
+        print(resulted_article_details.get('ids')[0])
 
-        # Get sentence embeddings of current news
-        current_sentence_embeddings = []
-        categorywise_classified_news_list = [item for item in classified_news_list if item.category == category]
-        for current_news in categorywise_classified_news_list:
-            heading = current_news.heading
+        resulted_articles = News.objects.filter(news_id__in=resulted_article_details.get('ids')[0]).all()
 
-            heading_embedding = to_sentence_embedding(heading)
-            current_sentence_embeddings.append(heading_embedding)
+        print(resulted_articles)
 
-        # Find most similar between previously liked news sentence embeddings and new news sentence embeddings
-        similarity_scores = []
-        for current_sentence_embedding in current_sentence_embeddings:
-
-            liked_data_similarity = []
-            for liked_sentence_embedding in liked_sentence_embeddings:
-                similarity_score = cosine_similarity(liked_sentence_embedding.reshape(-1, 1), current_sentence_embedding.reshape(-1, 1))
-                liked_data_similarity.append(similarity_score)
-                # print(similarity_score)
-
-            overall_similarity = np.mean(liked_data_similarity)
-            similarity_scores.append(overall_similarity)
-
-        df_field_categories.append(category)
-        df_field_liked_counts.append(liked_count)
-        df_field_similarity_data.append(pd.DataFrame({
-            'similarity_score': similarity_scores,
-            'news_item': categorywise_classified_news_list
-        }))
     
-    categorywise_similarty_data = pd.DataFrame({
-        'category': df_field_categories,
-        'liked_count': df_field_liked_counts,
-        'similarity_data': df_field_similarity_data
-    })
+    else:
+        # The user seems to be new user or they have never liked/disliked any article before
+        # Suggest some random articles
+        logger.info('User has not liked any previous articles. Suggesting some random articles.')
 
-    categorywise_similarty_data['liked_count_ratio'] = (categorywise_similarty_data['liked_count'] / len(categorywise_similarty_data.index)) * len(classified_news_list)
+        todays_news_items = [news_item for news_item in todays_news_items]
 
-    recommended_news_items = []
-    for index, similarity_data_row in categorywise_similarty_data.sort_values(by='liked_count_ratio', ascending=False).iterrows():
-        category = similarity_data_row['category']
-        similarity_data: pd.DataFrame = similarity_data_row['similarity_data']
-        liked_count_ratio = similarity_data_row['liked_count_ratio']
+        resulted_articles = random.sample(todays_news_items, MAXIMUM_NO_OF_RANDOM_SUGGESTED_ARTICLES)
 
-        news_items = similarity_data.sort_values(by='similarity_score', ascending=False).iloc[:int(liked_count_ratio)]['news_item'].tolist()
-        recommended_news_items += news_items
+        logger.info(resulted_articles)
+
+
+
+
+
+    # recommended_news_items = []
+    # for index, similarity_data_row in categorywise_similarty_data.sort_values(by='liked_count_ratio', ascending=False).iterrows():
+    #     category = similarity_data_row['category']
+    #     similarity_data: pd.DataFrame = similarity_data_row['similarity_data']
+    #     liked_count_ratio = similarity_data_row['liked_count_ratio']
+
+    #     news_items = similarity_data.sort_values(by='similarity_score', ascending=False).iloc[:int(liked_count_ratio)]['news_item'].tolist()
+    #     recommended_news_items += news_items
     
     render_context = {
-        "news_item_list": recommended_news_items,
-        "extra_news_list": classified_news_list
+        "news_item_list": resulted_articles,
+        "extra_news_list": todays_news_items
     }
 
     return render(request, 'news_app/home.html', render_context)

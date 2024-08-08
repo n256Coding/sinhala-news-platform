@@ -8,3 +8,5 @@ sinling==0.3.6
 django_rest_framework
 gensim
 django-apscheduler==0.6.2
+chromadb==0.5.5
+sentence_transformers==3.0.1

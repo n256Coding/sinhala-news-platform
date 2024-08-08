@@ -1,21 +1,30 @@
-from apscheduler.executors.pool import ThreadPoolExecutor, ProcessPoolExecutor
-import time
 from apscheduler.schedulers.background import BackgroundScheduler
-from django_apscheduler.jobstores import DjangoJobStore, register_events
-from django.utils import timezone
-from django_apscheduler.models import DjangoJobExecution
+from apscheduler.jobstores.memory import MemoryJobStore
+from apscheduler.job import Job
+from django_apscheduler.jobstores import register_events, DjangoJobStore
 import sys
 
 from news_app.models import News
 from news_app.services.classifier import Classifier
 from news_app.services.spider import Spider
+from recommendation.services.vector_db_provider import get_chroma_db_collection
 
-def my_scheduled_task():
+def my_scheduled_task(scheduler):
 
-    print("Task is running...")
+    # Get all jobs
+    jobs = scheduler.get_jobs()
+    
+    # Print job IDs and the number of jobs
+    for job in jobs:
+        print(f'Job ID: {job.id}')
+    print(f'Number of current jobs: {len(jobs)}')
+
+
+    print(f"{Job.id} Task is running...")
 
     classifier = Classifier()
     spider = Spider()
+    chroma_collection = get_chroma_db_collection()
 
     news_items = spider.load_latest_news_items()
 
@@ -34,8 +43,16 @@ def my_scheduled_task():
         )
 
         news_model.save()
+
+        chroma_collection.add(
+            ids=[classifed_news_item.news_id],
+            embeddings=[classifed_news_item.get_content_embedding()],
+            metadatas=[{'timestamp': classifed_news_item.get_posix_timstamp()}]
+        )
+
+        
     
-    print('Task completed')
+    print(f'{Job.id} Task completed')
 
 def start():
 
@@ -44,26 +61,27 @@ def start():
     
 
     scheduler = BackgroundScheduler(
-        # executors = {
-        #     'default': ThreadPoolExecutor(max_workers=1),
-        #     'processpool': ProcessPoolExecutor(1)
-        # }
-        # gconfig = {
-        #     'executors': 1
-        # },
         gconfig = {
             'apscheduler.job_defaults.max_instances': 1
         }
     )
     # scheduler.add_jobstore(DjangoJobStore(), "default")
+    # scheduler.add_jobstore(MemoryJobStore(), 'inmemory')
+    print(f'Current jobs: {scheduler.get_jobs()}')
+
+    if scheduler.running:
+        scheduler.shutdown(False)
+        scheduler.start(False)
+    
     scheduler.remove_all_jobs()
     scheduler.add_job(my_scheduled_task, 
                       'interval', 
-                      seconds=60, 
-                      name='my_task_2', 
-                      jobstore='default',
+                      seconds=300, 
+                      name='my_task_1', 
+                    #   jobstore='inmemory',
                       max_instances=1,
+                      args=[scheduler]
                       )
     register_events(scheduler)
     scheduler.start()
-    print("Scheduler started...", file=sys.stdout)
+    print(f"Scheduler started...", file=sys.stdout)

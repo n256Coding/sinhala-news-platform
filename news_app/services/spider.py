@@ -8,6 +8,7 @@ import requests
 
 from news_app.dto.news import NewsItem
 from news_app.models import News
+from sinhala_news_platform_backend.settings import DERANA_NEWS_ID_PREFIX
 
 
 class Spider:
@@ -85,7 +86,7 @@ class Spider:
         news_item.heading = heading_element.text
         news_item.content = stripped_content
         news_item.timestamp = datetime.datetime.strptime(content_timestamp.text.strip(), "%B %d, %Y  		%I:%M %p")
-        news_item.news_id = response.url.split('/')[-1]
+        news_item.news_id = f'{DERANA_NEWS_ID_PREFIX}_{response.url.split('/')[-1]}'
         news_item.link_to_source = response.url
 
         return news_item

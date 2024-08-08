@@ -127,4 +127,10 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+
+# Custom Configurations
 USE_CACHED_NEWS = "true"
+CHROMA_DB_COLLECTION_NAME = "news_collection"
+DERANA_NEWS_ID_PREFIX = "der"
+
+MAXIMUM_NO_OF_RANDOM_SUGGESTED_ARTICLES = 10

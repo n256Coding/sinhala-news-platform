@@ -2,6 +2,11 @@
 ```bash
 python manage.py runserver
 ```
+Run server without duplicate schedulers
+
+```bash
+python manage.py runserver --noreload
+```
 
 ### Migrate database changes
 

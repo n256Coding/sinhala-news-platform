@@ -6,9 +6,6 @@ class NewsAppConfig(AppConfig):
     name = 'news_app'
 
     def ready(self) -> None:
-        # print(f'----- Hello: {__name__}')
-        # if __name__ == 'main':
         from news_app.scheduler import scheduler
         print('Starting schedulers ---')
         scheduler.start()
-        # pass

@@ -7,3 +7,4 @@ class News(models.Model):
     heading = models.TextField()
     category = models.CharField(max_length=50)
     link_to_source = models.TextField()
+    abstract = models.TextField()

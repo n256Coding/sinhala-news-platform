@@ -2,8 +2,8 @@
 ```bash
 python manage.py runserver
 ```
-Run server without duplicate schedulers
 
+Run server without duplicate schedulers
 ```bash
 python manage.py runserver --noreload
 ```

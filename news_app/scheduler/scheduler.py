@@ -4,10 +4,12 @@ from apscheduler.job import Job
 from django_apscheduler.jobstores import register_events, DjangoJobStore
 import sys
 
+from news_app.dto.news import NewsItem
 from news_app.models import News
 from news_app.services.classifier import Classifier
 from news_app.services.spider import Spider
 from recommendation.services.vector_db_provider import get_chroma_db_collection
+from sinhala_news_platform_backend.settings import NEWS_ABSTRACT_SIZE
 
 def my_scheduled_task(scheduler):
 
@@ -28,7 +30,7 @@ def my_scheduled_task(scheduler):
 
     news_items = spider.load_latest_news_items()
 
-    classified_news_items = classifier.classify(news_items)
+    classified_news_items: list[NewsItem] = classifier.classify(news_items)
 
     for classifed_news_item in classified_news_items:
 
@@ -39,7 +41,8 @@ def my_scheduled_task(scheduler):
             date = classifed_news_item.timestamp,
             heading = classifed_news_item.heading,
             category = classifed_news_item.category,
-            link_to_source = classifed_news_item.link_to_source
+            link_to_source = classifed_news_item.link_to_source,
+            abstract = classifed_news_item.content[:NEWS_ABSTRACT_SIZE]
         )
 
         news_model.save()

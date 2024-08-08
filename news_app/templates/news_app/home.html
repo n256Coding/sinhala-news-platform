@@ -13,7 +13,7 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">{{ news_item.heading }}</h5>
-                        <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                        <p class="card-text">{{ news_item.abstract }} ...</p>
                         <div class="news-card-footer-container">
                             <a class="fill-remain" href="{{ news_item.link_to_source }}" target="_blank">Read more</a>
                             <div class="news-user-feedback">
@@ -41,7 +41,8 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">{{ extra_news_item.heading }}</h5>
-                        <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                        {% comment %} <p class="card-text">{{ extra_news_item.content | slice:"0:30" }}</p> {% endcomment %}
+                        {% comment %} <p class="card-text">{{ extra_news_item.abstract }} ...</p> {% endcomment %}
                         <div class="news-card-footer-container">
                             <a class="fill-remain" href="{{ extra_news_item.link_to_source }}" target="_blank">Read more</a>
                             <div class="news-user-feedback">

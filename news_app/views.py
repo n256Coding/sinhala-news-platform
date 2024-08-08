@@ -1,18 +1,14 @@
-# from datetime import datetime
 import datetime
 import random
 import chromadb
 from django.shortcuts import render
 import logging
-from sklearn.metrics.pairwise import cosine_similarity
-import numpy as np
 import pandas as pd
 
 from news_app.models import News
 from recommendation.models import UserFeedback
-from recommendation.services.recommendation import to_sentence_embedding
 from recommendation.services.vector_db_provider import get_chroma_db_collection
-from sinhala_news_platform_backend.settings import MAXIMUM_NO_OF_RANDOM_SUGGESTED_ARTICLES
+from sinhala_news_platform_backend.settings import MAXIMUM_NO_OF_SUGGESTED_ARTICLES
 
 logger = logging.getLogger(__name__)
 
@@ -47,14 +43,22 @@ def home(request):
             query_embeddings=liked_embddings,
             n_results=5,
             where={'timestamp': {'$gte': datetime.datetime.combine(datetime.datetime.today(), datetime.time.min).timestamp()}},
-            include=[]
+            include=['distances']
         )
-        print(resulted_article_details.get('ids')[0])
+        ids = []
+        distances = []
+        for resulted_article_detail_ids in resulted_article_details.get('ids'):
+            ids.extend(resulted_article_detail_ids)
+        for resulted_article_detail_distances in resulted_article_details.get('distances'):
+            distances.extend(resulted_article_detail_distances)
 
-        resulted_articles = News.objects.filter(news_id__in=resulted_article_details.get('ids')[0]).all()
-
-        print(resulted_articles)
-
+        article_details_df = pd.DataFrame({
+            'id': ids,
+            'distances': distances
+        })
+        article_details_df = article_details_df.sort_values(by='distances', ascending=False).head(MAXIMUM_NO_OF_SUGGESTED_ARTICLES)
+        
+        resulted_articles = News.objects.filter(news_id__in=article_details_df['id'].values).all()
     
     else:
         # The user seems to be new user or they have never liked/disliked any article before
@@ -63,22 +67,10 @@ def home(request):
 
         todays_news_items = [news_item for news_item in todays_news_items]
 
-        resulted_articles = random.sample(todays_news_items, MAXIMUM_NO_OF_RANDOM_SUGGESTED_ARTICLES)
+        resulted_articles = random.sample(todays_news_items, MAXIMUM_NO_OF_SUGGESTED_ARTICLES)
 
         logger.info(resulted_articles)
 
-
-
-
-
-    # recommended_news_items = []
-    # for index, similarity_data_row in categorywise_similarty_data.sort_values(by='liked_count_ratio', ascending=False).iterrows():
-    #     category = similarity_data_row['category']
-    #     similarity_data: pd.DataFrame = similarity_data_row['similarity_data']
-    #     liked_count_ratio = similarity_data_row['liked_count_ratio']
-
-    #     news_items = similarity_data.sort_values(by='similarity_score', ascending=False).iloc[:int(liked_count_ratio)]['news_item'].tolist()
-    #     recommended_news_items += news_items
     
     render_context = {
         "news_item_list": resulted_articles,

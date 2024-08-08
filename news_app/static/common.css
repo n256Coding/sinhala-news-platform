@@ -71,8 +71,16 @@
     margin-top: 10px;
 }
 
+.card:hover {
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    cursor: default;
+}
+
 .card-title {
     font-family: "Noto Serif Sinhala", serif;
 }
 
-
+.card-text {
+    font-family: "Noto Sans Sinhala", sans-serif;
+    font-size: small;
+}

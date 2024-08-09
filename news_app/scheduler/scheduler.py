@@ -11,7 +11,7 @@ from news_app.services.spider import Spider
 from recommendation.services.vector_db_provider import get_chroma_db_collection
 from sinhala_news_platform_backend.settings import NEWS_ABSTRACT_SIZE
 
-def my_scheduled_task(scheduler):
+def trigger_web_spider(scheduler):
 
     # Get all jobs
     jobs = scheduler.get_jobs()
@@ -77,7 +77,7 @@ def start():
         scheduler.start(False)
     
     scheduler.remove_all_jobs()
-    scheduler.add_job(my_scheduled_task, 
+    scheduler.add_job(trigger_web_spider, 
                       'interval', 
                       seconds=300, 
                       name='my_task_1', 
@@ -87,4 +87,4 @@ def start():
                       )
     register_events(scheduler)
     scheduler.start()
-    print(f"Scheduler started...", file=sys.stdout)
+    print("Scheduler started...", file=sys.stdout)

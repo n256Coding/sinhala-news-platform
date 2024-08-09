@@ -8,7 +8,6 @@ from recommendation.models import UserFeedback
 
 @api_view(['POST'])
 def get_user_feedback(request: Request):
-    print(dir(request))
 
     user = request.user
 

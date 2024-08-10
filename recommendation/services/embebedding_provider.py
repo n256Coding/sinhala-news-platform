@@ -13,10 +13,10 @@ with open('temp/models/xgboost/tfidf_vectorizer.pkl', 'rb') as f:
 print('-- It is loaded again ---------------------------')
 
 
-def get_embeddings(text_documents: list[str]):
+def get_sbert_embeddings(text_documents: list[str]):
     return sentence_bert_model.encode(text_documents)
 
-def get_embedding(text_document: str) -> ndarray:
+def get_sbert_embedding(text_document: str) -> ndarray:
     return sentence_bert_model.encode(text_document)
 
 def get_tfidf_embeddings(text_documents: list[str]):

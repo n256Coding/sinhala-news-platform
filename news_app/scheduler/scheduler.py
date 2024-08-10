@@ -30,7 +30,7 @@ def trigger_web_spider(scheduler):
 
     news_items = spider.load_latest_news_items()
 
-    classified_news_items: list[NewsItem] = classifier.classify(news_items)
+    classified_news_items: list[NewsItem] = classifier.bert_classify(news_items)
 
     for classifed_news_item in classified_news_items:
 

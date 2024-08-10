@@ -4,9 +4,17 @@ import chromadb
 from django.shortcuts import render
 import logging
 import pandas as pd
+import xgboost as xgb
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework.request import Request
 
+from news_app.constants.class_label_mapper import ID_TO_LABEL
+from news_app.dto.news import NewsItem
 from news_app.models import News
+from news_app.services.classifier import Classifier
 from recommendation.models import UserFeedback
+from recommendation.services.embebedding_provider import get_tfidf_embeddings
 from recommendation.services.vector_db_provider import get_chroma_db_collection
 from sinhala_news_platform_backend.settings import MAXIMUM_NO_OF_SUGGESTED_ARTICLES
 
@@ -78,3 +86,26 @@ def home(request):
     }
 
     return render(request, 'news_app/home.html', render_context)
+
+@api_view(['POST'])
+def classify_article(request: Request):
+
+    print(request.data)
+
+    news_document = request.data.get('news_document')
+    model_type = request.data.get('model_type')
+
+    classifer = Classifier()
+    if model_type == 'light':
+        predicted_label = classifer.xgb_classify(news_document)
+
+    else: # 'heavy'
+        news_item = NewsItem()
+        news_item.content = news_document
+        predicted_items = classifer.bert_classify([news_item])
+
+        predicted_label = predicted_items[0].category
+
+    return Response({
+        'category': predicted_label
+    })

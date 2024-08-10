@@ -2,7 +2,7 @@ from django.db import models
 
 # Create your models here.
 class News(models.Model):
-    news_id = models.CharField(max_length=50)
+    news_id = models.CharField(max_length=50, unique=True)
     date = models.DateTimeField()
     heading = models.TextField()
     category = models.CharField(max_length=50)

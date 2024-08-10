@@ -4,17 +4,14 @@ import chromadb
 from django.shortcuts import render
 import logging
 import pandas as pd
-import xgboost as xgb
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.request import Request
 
-from news_app.constants.class_label_mapper import ID_TO_LABEL
 from news_app.dto.news import NewsItem
 from news_app.models import News
 from news_app.services.classifier import Classifier
 from recommendation.models import UserFeedback
-from recommendation.services.embebedding_provider import get_tfidf_embeddings
 from recommendation.services.vector_db_provider import get_chroma_db_collection
 from sinhala_news_platform_backend.settings import MAXIMUM_NO_OF_SUGGESTED_ARTICLES
 

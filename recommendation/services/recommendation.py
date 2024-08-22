@@ -109,9 +109,12 @@ def get_recommended_articles(todays_news_items, logger: Logger, current_user: Us
                 current_user_id = i
 
             user_vector = []
-            for i, news_id in enumerate(news_id_list):
-                news_item_map[i] = news_id
+            for j, news_id in enumerate(news_id_list):
+                news_item_map[j] = news_id
                 user_vector.append(int(UserFeedback.objects.filter(news_item_id=news_id, user_id=user_id).exists()))
+
+            if not user_vector:
+                user_vector.append(0)
 
             matrix.append(user_vector)
 

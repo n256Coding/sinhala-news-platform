@@ -2,17 +2,30 @@
 @import url('https://fonts.googleapis.com/css2?family=Gemunu+Libre:wght@200..800&family=Noto+Sans+Sinhala:wght@100..900&family=Noto+Serif+Sinhala:wght@100..900&display=swap');
 
 .page-header {
-    background-color: beige;
-    text-align: right;
+    background-color: rgba(0, 0, 0, 0.641);
+    color: white;
     padding-right: 20px;
     font-family: "Gemunu Libre", sans-serif;
     font-size: 30px;
     position: sticky;
     z-index: 999;
+    top: 0;
+    display: flex;
+    flex-direction: row;
+    backdrop-filter: blur(6px);
+}
+
+.page-header h1 {
+    flex-grow: 1;
+    margin-left: 10px;
+}
+
+.page-header h1, .page-header span, .page-header a {
+    margin-left: 15px;
 }
 
 .page-title {
-    background-color: rgba(100, 148, 237, 0.594);
+    background-color: rgba(0, 0, 0, 0.515);
     height: 6rem;
     display: flex;
     align-items: center;
@@ -36,7 +49,7 @@
 .news-category {
     display: flex;
     text-align: center;
-    background-color: rgb(45, 77, 255);
+    background-color: rgba(0, 0, 0, 0.63);
     color: white;
     font-weight: 600;
     height: fit-content;
@@ -53,13 +66,14 @@
 .feedback-positive:hover {
     border-style: solid;
     border-width: 1px;
-    border-color: rgb(255, 157, 157);
+    border-color: rgb(118, 188, 108);
+    background-color: rgb(118, 188, 108);
 }
 
 .feedback-negative:hover {
     border-style: solid;
     border-width: 1px;
-    border-color: rgb(118, 188, 108);
+    border-color: rgb(255, 157, 157);
     transform: rotate(45deg);
 }
 
@@ -83,4 +97,25 @@
 .card-text {
     font-family: "Noto Sans Sinhala", sans-serif;
     font-size: small;
+}
+
+.recommended-news-panel, .hot-news-panel {
+    background-color: white;
+    border-radius: 10px;
+    min-height: 100px;
+    margin: 5px;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.recommended-news-container, .hot-news-container {
+    background-color: rgb(196, 196, 196);
+}
+
+.recommended-news-container h3, .hot-news-container h3 {
+    color: rgb(0, 0, 0);
+    font-family: "Noto Sans Sinhala", sans-serif;
+    margin-top: 10px;
+    margin-left: 5px;
+    font-size: 20px;
 }

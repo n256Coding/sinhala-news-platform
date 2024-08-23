@@ -5,9 +5,9 @@
 <div class="row">
 
     {% comment %} Recommended news section {% endcomment %}
-    <div class="col-9">
-        <h3>Picked for You</h3>
-        <div class="row row-cols-3">
+    <div class="col-9 recommended-news-container">
+        <h3>ඔබ ව‌ෙනුව‌ෙන් ත‌ෝරාගත්</h3>
+        <div class="row row-cols-3 recommended-news-panel">
             {% for news_item in news_item_list %}
             <div class="col">
                 <div class="card">
@@ -18,7 +18,7 @@
                             <a class="fill-remain" href="{{ news_item.link_to_source }}" target="_blank">Read more</a>
                             <div class="news-user-feedback">
                                 <a class="feedback-positive" href="#">👍</a>
-                                <a class="feedback-negative" href="#">👎</a>
+                                {% comment %} <a class="feedback-negative" href="#">👎</a> {% endcomment %}
                             </div>
                         </div>
                         <input type="hidden" class="hdn-news-id" value="{{ news_item.news_id }}">
@@ -33,9 +33,9 @@
     </div>
 
     {% comment %} Latest news section {% endcomment %}
-    <div class="col-3">
-        <h3>All News</h3>
-        <div class="row row-cols-1">
+    <div class="col-3 hot-news-container">
+        <h3>උණුසුම් පුවත්</h3>
+        <div class="row row-cols-1 hot-news-panel">
             {% for extra_news_item in extra_news_list %}
             <div class="col">
                 <div class="card">
@@ -47,7 +47,7 @@
                             <a class="fill-remain" href="{{ extra_news_item.link_to_source }}" target="_blank">Read more</a>
                             <div class="news-user-feedback">
                                 <a class="feedback-positive" href="#">👍</a>
-                                <a class="feedback-negative" href="#">👎</a>
+                                {% comment %} <a class="feedback-negative" href="#">👎</a> {% endcomment %}
                             </div>
                         </div>
                         <input type="hidden" class="hdn-news-id" value="{{ extra_news_item.news_id }}">

@@ -27,8 +27,17 @@ Python greater than 3.11 installed. Anaconda prefererd
     ```
 
 4. Download models from [OneDrive](https://ssu-my.sharepoint.com/:f:/r/personal/2senan77_solent_ac_uk/Documents/Dissertation%20Project/Documentations/Final%20Report/Shared%20Models?csf=1&web=1&e=hGldD5) location.
-    1. Create a new directory in project root directory called "temp" if not exists.
-    2. Move the downloaded files into "temp" folder. (Make sure not to rename any folder in downloaded files)
+    1. Create a new directory in project root directories with path "temp/models" if not exists.
+    2. Move the downloaded files into "temp/models" folder. (Make sure not to rename any folder in downloaded files)
+    3. At the end, file structure should look like below.
+        ```
+        <Project Root Directory>
+        ├─ <Current Project Files>
+        └─ temp
+           └─ models
+              ├─ sinbert-1810
+              └─ xgboost
+        ```
 
 5. Start the application.
     ```bash

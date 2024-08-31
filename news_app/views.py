@@ -1,5 +1,6 @@
 import datetime
 from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
 import logging
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -13,6 +14,7 @@ from recommendation.services.recommendation import get_recommended_articles
 logger = logging.getLogger(__name__)
 
 
+@login_required(login_url='/users/login_user')
 def home(request):
     
     # Currently logged user

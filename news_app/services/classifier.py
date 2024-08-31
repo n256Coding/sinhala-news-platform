@@ -11,7 +11,7 @@ from recommendation.services.embebedding_provider import get_tfidf_embeddings
 class Classifier:
 
     def __init__(self) -> None:
-        self.bert_classifier_local_location = 'temp/models/sinbert-500'
+        self.bert_classifier_local_location = 'temp/models/sinbert-1810'
         self.bert_classifier_pipe = pipeline("text-classification", self.bert_classifier_local_location)
         self.content_max_length = 500
         self.xgb_classifier = xgb.XGBClassifier()

@@ -1,8 +1,8 @@
 # Sinhala News Platform
 This is the source of sinhala news platform dissertation project.
 
-Name: Senarath Pathiranalage Nishan Sajeewee Wickramasinghe
-Student ID: Q102091977
+* Name: Senarath Pathiranalage Nishan Sajeewee Wickramasinghe
+* Student ID: Q102091977
 
 ## Instructions to Start the Application
 
@@ -44,6 +44,11 @@ Python greater than 3.11 installed. Anaconda prefererd
     python manage.py runserver --noreload
     ```
 
+6. Start browser and navigate to [http://127.0.0.1:8000/users/login_user](http://127.0.0.1:8000/users/login_user)
+
+7. Use following credentials to log into the system.
+    * Username: Admin
+    * Password: 123
 
 ## Development Notes
 This sections is only for development purposes and please ignore if you want to run the application.

@@ -2,7 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Gemunu+Libre:wght@200..800&family=Noto+Sans+Sinhala:wght@100..900&family=Noto+Serif+Sinhala:wght@100..900&display=swap');
 
 .page-header {
-    background-color: rgba(0, 0, 0, 0.641);
+    background-color: rgba(18, 67, 229, 0.671);
     color: white;
     padding-right: 20px;
     font-family: "Gemunu Libre", sans-serif;
@@ -13,11 +13,17 @@
     display: flex;
     flex-direction: row;
     backdrop-filter: blur(6px);
+    border-bottom: 10px solid rgb(169, 193, 254);
 }
 
 .page-header h1 {
     flex-grow: 1;
     margin-left: 10px;
+}
+
+.page-header a {
+    color: white;
+    text-decoration: none;
 }
 
 .page-header h1, .page-header span, .page-header a {
@@ -38,6 +44,16 @@
 
 .page-title > h1 {
     font-family: "Noto Sans Sinhala", sans-serif;
+}
+
+.login-form-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.login-form {
+    width: 50%;
 }
 
 .news-card-footer-container {

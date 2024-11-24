@@ -1,8 +1,5 @@
 # Sinhala News Platform
-This is the source of sinhala news platform dissertation project.
-
-* Name: Senarath Pathiranalage Nishan Sajeewee Wickramasinghe
-* Student ID: Q102091977
+This AI-based application collects, categorizes, visualizes and recommends Sinhalese news articles.
 
 ## Instructions to Start the Application
 
